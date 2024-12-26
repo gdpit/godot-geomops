@@ -1,0 +1,134 @@
+[gd_scene load_steps=7 format=3 uid="uid://b5sjoxpin1jjv"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_dv8gi"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_af4lq"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4f4x2"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_4uxt2"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mf3ip"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_vlqur"]
+points = PackedVector3Array(0, -1, -1, 0.707107, -1, -0.707107, 1, -1, 0, 0.707107, -1, 0.707107, 0, -1, 1, -0.707107, -1, 0.707107, -1, -1, 0, -0.707107, -1, -0.707107, 0, 1, 0)
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_dv8gi")
+
+[node name="Sphere" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sphere"]
+shape = SubResource("SphereShape3D_af4lq")
+
+[node name="Capsule" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.75528, 0, -1.54508)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Capsule"]
+shape = SubResource("CapsuleShape3D_4f4x2")
+
+[node name="Cylinder" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.93893, 0, 4.04509)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cylinder"]
+shape = SubResource("CylinderShape3D_4uxt2")
+
+[node name="Box" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.93893, 0, 4.04508)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Box"]
+shape = SubResource("BoxShape3D_mf3ip")
+
+[node name="Convex" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.75528, 0, -1.54509)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Convex"]
+shape = SubResource("ConvexPolygonShape3D_vlqur")
+
+[node name="ClosestPoints" type="Node" parent="."]
+
+[node name="SphereCapsule" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/SphereCapsule"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.35077, 0, -1.83898)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/SphereCapsule"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.404509, 0, -4.70611)
+
+[node name="SphereCylinder" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/SphereCylinder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.78442, 0, 3.56956)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/SphereCylinder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.154508, 0, -4.52447)
+
+[node name="SphereBox" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/SphereBox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.43893, 0, 3.54509)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/SphereBox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.136193, 0, -4.51891)
+
+[node name="SphereConvex" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/SphereConvex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.04818, -1, -2.25219)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/SphereConvex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.405412, -0.0989129, -4.72458)
+
+[node name="CapsuleCylinder" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/CapsuleCylinder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.09343, 0, 3.56956)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/CapsuleCylinder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.60077, 0, -1.06956)
+
+[node name="CapsuleBox" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/CapsuleBox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.43893, 0, 3.54508)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/CapsuleBox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3469, 0, -1.2566)
+
+[node name="CapsuleConvex" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/CapsuleConvex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.75528, -1, -1.54509)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/CapsuleConvex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.25603, -0.527289, -1.54508)
+
+[node name="CylinderBox" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/CylinderBox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.43893, 0, 4.04571)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/CylinderBox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.43893, 0, 4.0457)
+
+[node name="CylinderConvex" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/CylinderConvex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.04818, -1, -0.837979)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/CylinderConvex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.52876, -1, 3.75913)
+
+[node name="BoxConvex" type="Node" parent="ClosestPoints"]
+
+[node name="PointA" type="Marker3D" parent="ClosestPoints/BoxConvex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.75528, -1, -0.545086)
+
+[node name="PointB" type="Marker3D" parent="ClosestPoints/BoxConvex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.43893, -0.5, 3.54508)

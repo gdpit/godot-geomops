@@ -11,6 +11,8 @@
 !src/
 !src/simplex.hpp
 !src/simplex.cpp
+!src/support.hpp
+!src/support.cpp
 !src/distutils.hpp
 !src/distutils.cpp
 !src/register_types.hpp
@@ -18,3 +20,7 @@
 
 !demo/
 !demo/gdexample.gdextension
+!demo/project.godot
+!demo/icon.svg
+!demo/main.tscn
+!demo/main.gd

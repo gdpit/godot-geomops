@@ -1,5 +1,6 @@
 #include "distutils.hpp"
 #include "simplex.hpp"
+#include "support.hpp"
 
 #include <godot_cpp/classes/sphere_shape3d.hpp>
 #include <godot_cpp/classes/capsule_shape3d.hpp>
@@ -114,45 +115,35 @@ Vector3 DistUtils::support(CollisionShape3D const * cs, Vector3 const dir)
     Vector3 const pos = cs->get_global_position();
     Quaternion const ort = Quaternion(cs->get_global_rotation());
     if (SphereShape3D const * sphere = Object::cast_to<SphereShape3D>(*cs->get_shape())) {
-        return pos + sphere->get_radius() * dir.normalized();
+        return ::support(sphere, pos, ort, dir);
     } else if (CapsuleShape3D const * capsule = Object::cast_to<CapsuleShape3D>(*cs->get_shape())) {
-        Vector3 const dir_local = ort.xform_inv(dir);
-        real_t const r = capsule->get_radius();
-        Vector3 pnt_local(0.0, SIGN(dir_local.y) * (0.5 * capsule->get_height() - r), 0.0);
-        pnt_local += r * dir_local.normalized();
-        return pos + ort.xform(pnt_local);
+        return ::support(capsule, pos, ort, dir);
     } else if (CylinderShape3D const * cylinder = Object::cast_to<CylinderShape3D>(*cs->get_shape())) {
-        Vector3 const dir_local = ort.xform_inv(dir);
-        Vector3 const dir_radial(dir_local.x, 0.0, dir_local.z);
-        Vector3 pnt_local(0.0, SIGN(dir_local.y) * 0.5 * cylinder->get_height(), 0.0);
-        pnt_local += cylinder->get_radius() * dir_radial.normalized();
-        return pos + ort.xform(pnt_local);
+        return ::support(cylinder, pos, ort, dir);
     } else if (BoxShape3D const * box = Object::cast_to<BoxShape3D>(*cs->get_shape())) {
-        Vector3 const dir_local = ort.xform_inv(dir);
-        return pos + ort.xform(dir_local.sign() * 0.5 * box->get_size());
+        return ::support(box, pos, ort, dir);
     } else if (ConvexPolygonShape3D const * convex = Object::cast_to<ConvexPolygonShape3D>(*cs->get_shape())) {
-        Vector3 const dir_local = ort.xform_inv(dir);
-        PackedVector3Array const pnt_array = dynamic_cast<ConvexPolygonShape3D const*>(convex)->get_points();
-        real_t max_value = std::numeric_limits<real_t>::lowest();
-        int64_t max_index = -1;
-        for (int64_t i = 0; i < pnt_array.size(); i++) {
-            real_t const value = dir_local.dot(pnt_array[i]);
-            if (value > max_value) {
-                max_value = value;
-                max_index = i;
-            }
-        }
-        return pos + ort.xform(pnt_array[max_index]);
+        return ::support(convex, pos, ort, dir);
     }
-    UtilityFunctions::printerr("Not Implemented");
+    UtilityFunctions::printerr("Unsupported shape type passed to support function.");
     return Vector3();
 }
 
 
 DistanceDescriptor * DistUtils::distance_shape(CollisionShape3D const * csa, CollisionShape3D const * csb)
 {
+    if (!UtilityFunctions::is_instance_valid(csa)) {
+        UtilityFunctions::printerr("The collision shape 'csa' is not valid.");
+        return memnew(DistanceDescriptor());
+    }
+
+    if (!UtilityFunctions::is_instance_valid(csb)) {
+        UtilityFunctions::printerr("The collision shape 'csb' is not valid.");        
+        return memnew(DistanceDescriptor());
+    }
+
     if (csa == csb) {
-        UtilityFunctions::printerr("'a' and 'b' point to the same collision shape.");
+        UtilityFunctions::printerr("The same CollisionShape3D instance has been passed as both 'csa' and 'csb'.");
         return memnew(DistanceDescriptor());
     }
 

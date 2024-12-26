@@ -1,5 +1,5 @@
-#ifndef DISTUTILS_H
-#define DISTUTILS_H
+#ifndef DISTUTILS_HPP
+#define DISTUTILS_HPP
 
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/classes/collision_shape3d.hpp>
@@ -58,4 +58,4 @@ public:
 };
 
 
-#endif//DISTUTILS_H
+#endif//DISTUTILS_HPP

@@ -3,13 +3,8 @@
 
 
 Simplex::Simplex()
-: subt(), diff(), size(0)
-{
-    bary[0] = 0.0;
-    bary[1] = 0.0;
-    bary[2] = 0.0;
-    bary[3] = 0.0;
-}
+: subt(), diff(), bary(), size(0)
+{}
 
 
 size_t Simplex::get_size() const
@@ -167,10 +162,13 @@ void Simplex::remove(size_t const index)
     }
     size--;
     for (size_t i = index; i < size; i++) {
-        subt[i] = subt[i + 1]; subt[i + 1] = Vector3();
-        diff[i] = diff[i + 1]; diff[i + 1] = Vector3();
-        bary[i] = bary[i + 1]; bary[i + 1] = 0.0;
+        subt[i] = subt[i + 1];
+        diff[i] = diff[i + 1];
+        bary[i] = bary[i + 1];
     }
+    subt[size] = Vector3();
+    diff[size] = Vector3();
+    bary[size] = 0.0;
 }
 
 
@@ -188,16 +186,16 @@ void Simplex::append(Vector3 const subtrahend, Vector3 const difference)
 
 void Simplex::reduce()
 {
-    if ((size >= 4) && (bary[3] < 1e-12)) {
+    if ((size >= 4) && (bary[3] < std::numeric_limits<real_t>::epsilon())) {
         remove(3);
     }
-    if ((size >= 3) && (bary[2] < 1e-12)) {
+    if ((size >= 3) && (bary[2] < std::numeric_limits<real_t>::epsilon())) {
         remove(2);
     }
-    if ((size >= 2) && (bary[1] < 1e-12)) {
+    if ((size >= 2) && (bary[1] < std::numeric_limits<real_t>::epsilon())) {
         remove(1);
     }
-    if ((size >= 1) && (bary[0] < 1e-12)) {
+    if ((size >= 1) && (bary[0] < std::numeric_limits<real_t>::epsilon())) {
         remove(0);
     }
 }
@@ -205,39 +203,37 @@ void Simplex::reduce()
 
 Vector3 Simplex::get_closest_point(Vector3 const point)
 {
-    Vector3 closest_point = point;
-
+    Vector3 cp = point;
     bary[0] = 0.0;
     bary[1] = 0.0;
     bary[2] = 0.0;
     bary[3] = 0.0;
-
     switch (size) {
         case 1: {
             bary[0] = 1.0;
-            closest_point = diff[0];
+            cp = diff[0];
         } break;
         case 2: {
-            closest_point = get_closest_point_on_line(diff[0], diff[1], point, bary);
+            cp = get_closest_point_on_line(diff[0], diff[1], point, bary);
         } break;
         case 3: {
-            closest_point = get_closest_point_on_triangle(diff[0], diff[1], diff[2], point, bary);
+            cp = get_closest_point_on_triangle(diff[0], diff[1], diff[2], point, bary);
         } break;
         case 4: {
-            closest_point = get_closest_point_on_tetrahedron(diff[0], diff[1], diff[2], diff[3], point, bary);
+            cp = get_closest_point_on_tetrahedron(diff[0], diff[1], diff[2], diff[3], point, bary);
         } break;
     }
-
-    return closest_point;
+    return cp;
 }
 
 
 Vector3 Simplex::get_closest_point_on_a() const
 {
     Vector3 cp;
-    for (size_t i = 0; i < size; i++) {
-        cp += bary[i] * (diff[i] + subt[i]);
-    }
+    cp += bary[0] * (diff[0] + subt[0]);
+    cp += bary[1] * (diff[1] + subt[1]);
+    cp += bary[2] * (diff[2] + subt[2]);
+    cp += bary[3] * (diff[3] + subt[3]);
     return cp;
 }
 
@@ -245,9 +241,10 @@ Vector3 Simplex::get_closest_point_on_a() const
 Vector3 Simplex::get_closest_point_on_b() const
 {
     Vector3 cp;
-    for (size_t i = 0; i < size; i++) {
-        cp += bary[i] * subt[i];
-    }
+    cp += bary[0] * subt[0];
+    cp += bary[1] * subt[1];
+    cp += bary[2] * subt[2];
+    cp += bary[3] * subt[3];
     return cp;
 }
 
