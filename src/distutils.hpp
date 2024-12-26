@@ -44,6 +44,7 @@ class DistUtils: public RefCounted
 private:
     static real_t tolerance;
     static size_t max_iter;
+    static Vector3 support(CollisionShape3D const * cs, Vector3 const dir);
 protected:
     static void _bind_methods();
 public:
@@ -52,9 +53,8 @@ public:
     static void set_tolerance(real_t const t);
     static size_t get_max_iter();
     static void set_max_iter(size_t const n);
-    static Vector3 support(CollisionShape3D const * cs, Vector3 const dir);
     static DistanceDescriptor * distance_shape(CollisionShape3D const * csa, CollisionShape3D const * csb);
-    static DistanceDescriptor * distance_point(CollisionShape3D const * cs, Vector3 const p);
+    static DistanceDescriptor * distance_point(CollisionShape3D const * cs, Vector3 const q);
 };
 
 

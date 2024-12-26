@@ -13,6 +13,7 @@ var shapes: Array[CollisionShape3D] = [
 
 func _ready() -> void:
 	DistUtils.set_tolerance(1e-4)
+	DistUtils.set_max_iter(32)
 	
 	#$Convex/CollisionShape3D.shape.points = PackedVector3Array([
 		#Vector3( 0.000000, -1.000000, -1.000000),

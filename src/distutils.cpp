@@ -71,7 +71,6 @@ size_t DistUtils::max_iter  = 128;
 
 void DistUtils::_bind_methods()
 {
-    ClassDB::bind_static_method("DistUtils", D_METHOD("support", "cs", "dir"), &DistUtils::support);
     ClassDB::bind_static_method("DistUtils", D_METHOD("distance_shape", "csa", "csb"), &DistUtils::distance_shape);
     ClassDB::bind_static_method("DistUtils", D_METHOD("distance_point", "cs", "p"), &DistUtils::distance_point);
     ClassDB::bind_static_method("DistUtils", D_METHOD("get_tolerance"), &DistUtils::get_tolerance);
@@ -125,7 +124,7 @@ Vector3 DistUtils::support(CollisionShape3D const * cs, Vector3 const dir)
     } else if (ConvexPolygonShape3D const * convex = Object::cast_to<ConvexPolygonShape3D>(*cs->get_shape())) {
         return ::support(convex, pos, ort, dir);
     }
-    UtilityFunctions::printerr("Unsupported shape type passed to support function.");
+    UtilityFunctions::push_error("Unsupported shape type passed to support function.");
     return Vector3();
 }
 
@@ -133,21 +132,22 @@ Vector3 DistUtils::support(CollisionShape3D const * cs, Vector3 const dir)
 DistanceDescriptor * DistUtils::distance_shape(CollisionShape3D const * csa, CollisionShape3D const * csb)
 {
     if (!UtilityFunctions::is_instance_valid(csa)) {
-        UtilityFunctions::printerr("The collision shape 'csa' is not valid.");
+        UtilityFunctions::push_error("The collision shape 'csa' is not valid.");
         return memnew(DistanceDescriptor());
     }
 
     if (!UtilityFunctions::is_instance_valid(csb)) {
-        UtilityFunctions::printerr("The collision shape 'csb' is not valid.");        
+        UtilityFunctions::push_error("The collision shape 'csb' is not valid.");        
         return memnew(DistanceDescriptor());
     }
 
     if (csa == csb) {
-        UtilityFunctions::printerr("The same CollisionShape3D instance has been passed as both 'csa' and 'csb'.");
+        UtilityFunctions::push_error("The same CollisionShape3D instance has been passed as both 'csa' and 'csb'.");
         return memnew(DistanceDescriptor());
     }
 
     Vector3 p = csb->get_global_position() - csa->get_global_position();
+    real_t d = 0.0;
 
     Simplex simplex;
     Vector3 a = support(csa,  p);
@@ -157,10 +157,11 @@ DistanceDescriptor * DistUtils::distance_shape(CollisionShape3D const * csa, Col
 
     for (size_t i = 0; i < max_iter; i++) {
         p = simplex.get_closest_point(Vector3());
-        
-        real_t const d = p.dot(p);
+
+        d = p.dot(p);
 
         if (d < (tolerance * tolerance)) {
+            UtilityFunctions::push_warning("Shapes are intersecting: the computed distance is zero or undefined.");
             return memnew(DistanceDescriptor());
         }
 
@@ -179,12 +180,16 @@ DistanceDescriptor * DistUtils::distance_shape(CollisionShape3D const * csa, Col
 
         simplex.append(a, c);
     }
-    return memnew(DistanceDescriptor());
+    UtilityFunctions::push_warning("Maximum iteration limit reached: returning the latest approximated distance.");
+    PrimitiveType const t = static_cast<PrimitiveType>(simplex.get_size());
+    Vector3 const cpa = simplex.get_closest_point_on_a();
+    Vector3 const cpb = simplex.get_closest_point_on_b();
+    return memnew(DistanceDescriptor(t, cpa, cpb, sqrt(d)));
 }
 
 
-DistanceDescriptor * DistUtils::distance_point(CollisionShape3D const * cs, Vector3 const p)
+DistanceDescriptor * DistUtils::distance_point(CollisionShape3D const * cs, Vector3 const q)
 {
-    UtilityFunctions::printerr("Maximum iteration count reached, output is not valid.");
+    UtilityFunctions::push_error("Not implemented: distance_point().");
     return memnew(DistanceDescriptor());
 }
