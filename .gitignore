@@ -5,6 +5,7 @@
 !.gitmodules
 !requirements.txt
 !SConstruct
+!build.ps1
 
 !godot-cpp/
 
