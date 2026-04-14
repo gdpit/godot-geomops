@@ -1,6 +1,19 @@
 #include "support.hpp"
 
 
+namespace geomops {
+
+using godot::Vector3;
+using godot::Quaternion;
+using godot::SphereShape3D;
+using godot::CylinderShape3D;
+using godot::CapsuleShape3D;
+using godot::BoxShape3D;
+using godot::ConvexPolygonShape3D;
+using godot::PackedVector3Array;
+using godot::SIGN;
+
+
 Vector3 support(SphereShape3D const * shere, Vector3 const position, 
                 Quaternion const orientation, Vector3 const direction)
 {
@@ -53,4 +66,6 @@ Vector3 support(ConvexPolygonShape3D const * convex, Vector3 const position,
         }
     }
     return position + orientation.xform(pnt_array[max_index]);
+}
+
 }

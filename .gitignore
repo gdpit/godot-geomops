@@ -1,9 +1,9 @@
 *
 
 !LICENSE
+!README.md
 !.gitignore
 !.gitmodules
-!requirements.txt
 !SConstruct
 !build.ps1
 
@@ -14,13 +14,13 @@
 !src/simplex.cpp
 !src/support.hpp
 !src/support.cpp
-!src/distutils.hpp
-!src/distutils.cpp
+!src/geomops.hpp
+!src/geomops.cpp
 !src/register_types.hpp
 !src/register_types.cpp
 
 !demo/
-!demo/gdexample.gdextension
+!demo/geomops.gdextension
 !demo/project.godot
 !demo/icon.svg
 !demo/main.tscn

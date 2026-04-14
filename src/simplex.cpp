@@ -1,6 +1,13 @@
 #include "simplex.hpp"
 #include <limits>
 
+namespace geomops {
+
+using godot::real_t;
+using godot::Vector3;
+using godot::ABS;
+using godot::CLAMP;
+
 
 Simplex::Simplex()
 : subt(), diff(), bary(), size(0)
@@ -15,7 +22,7 @@ size_t Simplex::get_size() const
 
 bool Simplex::is_point_in_front_of_tetrahedron_face(Vector3 const a, Vector3 const b, 
                                                     Vector3 const c, Vector3 const d, 
-                                                    Vector3 const p)
+                                                    Vector3 const p) 
 {
     Vector3 const n = vec3_cross(b - a, c - a);
     real_t const w = vec3_dot(d - a, n);
@@ -38,9 +45,10 @@ Vector3 Simplex::get_closest_point_on_line(Vector3 const a, Vector3 const b,
 }
 
 
-Vector3 Simplex::get_closest_point_on_triangle(Vector3 const a, Vector3 const b, 
-                                               Vector3 const c, Vector3 const p, 
-                                               real_t min_barycentric[])
+Vector3 Simplex::get_closest_point_on_triangle(
+    Vector3 const a, Vector3 const b, 
+    Vector3 const c, Vector3 const p, 
+    real_t min_barycentric[])
 {
     Vector3 const ab = b - a;
     Vector3 const ac = c - a;
@@ -229,17 +237,10 @@ Vector3 Simplex::get_closest_point(Vector3 const point)
 
 Vector3 Simplex::get_closest_point_on_a() const
 {
-    Vector3 cp;
-    cp += bary[0] * (diff[0] + subt[0]);
-    cp += bary[1] * (diff[1] + subt[1]);
-    cp += bary[2] * (diff[2] + subt[2]);
-    cp += bary[3] * (diff[3] + subt[3]);
-    return cp;
-}
-
-
-Vector3 Simplex::get_closest_point_on_b() const
-{
+    //  NOTE:
+    // subt[] = a
+    // diff[] = b - a
+    // a = subt[]
     Vector3 cp;
     cp += bary[0] * subt[0];
     cp += bary[1] * subt[1];
@@ -248,3 +249,19 @@ Vector3 Simplex::get_closest_point_on_b() const
     return cp;
 }
 
+
+Vector3 Simplex::get_closest_point_on_b() const
+{
+    //  NOTE:
+    //  subt[] = a
+    //  diff[] = b - a
+    //  b = diff[] + subt[]
+    Vector3 cp;
+    cp += bary[0] * (diff[0] + subt[0]);
+    cp += bary[1] * (diff[1] + subt[1]);
+    cp += bary[2] * (diff[2] + subt[2]);
+    cp += bary[3] * (diff[3] + subt[3]);
+    return cp;
+}
+
+}

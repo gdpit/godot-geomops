@@ -1,5 +1,5 @@
-#ifndef DISTUTILS_SUPPORT_HPP
-#define DISTUTILS_SUPPORT_HPP
+#ifndef GEOMOPS_SUPPORT_HPP
+#define GEOMOPS_SUPPORT_HPP
 
 #include <godot_cpp/variant/vector3.hpp>
 #include <godot_cpp/classes/sphere_shape3d.hpp>
@@ -8,22 +8,23 @@
 #include <godot_cpp/classes/box_shape3d.hpp>
 #include <godot_cpp/classes/convex_polygon_shape3d.hpp>
 
-using namespace godot;
+namespace geomops {
 
+godot::Vector3 support(godot::SphereShape3D const * shere, godot::Vector3 const position, 
+                godot::Quaternion const orientation, godot::Vector3 const direction);
 
-Vector3 support(SphereShape3D const * shere, Vector3 const position, 
-                Quaternion const orientation, Vector3 const direction);
+godot::Vector3 support(godot::CapsuleShape3D const * capsule, godot::Vector3 const position, 
+                godot::Quaternion const orientation, godot::Vector3 const direction);
 
-Vector3 support(CapsuleShape3D const * capsule, Vector3 const position, 
-                Quaternion const orientation, Vector3 const direction);
+godot::Vector3 support(godot::CylinderShape3D const * cylinder, godot::Vector3 const position, 
+                godot::Quaternion const orientation, godot::Vector3 const direction);
 
-Vector3 support(CylinderShape3D const * cylinder, Vector3 const position, 
-                Quaternion const orientation, Vector3 const direction);
+godot::Vector3 support(godot::BoxShape3D const * box, godot::Vector3 const position, 
+                godot::Quaternion const orientation, godot::Vector3 const direction);
 
-Vector3 support(BoxShape3D const * box, Vector3 const position, 
-                Quaternion const orientation, Vector3 const direction);
+godot::Vector3 support(godot::ConvexPolygonShape3D const * convex, godot::Vector3 const position, 
+                godot::Quaternion const orientation, godot::Vector3 const direction);
 
-Vector3 support(ConvexPolygonShape3D const * convex, Vector3 const position, 
-                Quaternion const orientation, Vector3 const direction);
+}
 
-#endif//DISTUTILS_SUPPORT_HPP
+#endif//GEOMOPS_SUPPORT_HPP

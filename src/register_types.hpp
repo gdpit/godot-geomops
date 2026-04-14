@@ -1,11 +1,9 @@
-#ifndef DISTUTILS_REGISTER_TYPES_H
-#define DISTUTILS_REGISTER_TYPES_H
+#ifndef GEOMOPS_REGISTER_TYPES_H
+#define GEOMOPS_REGISTER_TYPES_H
 
 #include <godot_cpp/core/class_db.hpp>
 
-using namespace godot;
+void initialize_geomops_module(godot::ModuleInitializationLevel p_level);
+void uninitialize_geomops_module(godot::ModuleInitializationLevel p_level);
 
-void initialize_distutils_module(ModuleInitializationLevel p_level);
-void uninitialize_distutils_module(ModuleInitializationLevel p_level);
-
-#endif//DISTUTILS_REGISTER_TYPES_H
+#endif//GEOMOPS_REGISTER_TYPES_H
