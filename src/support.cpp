@@ -1,5 +1,5 @@
 #include "support.hpp"
-
+#include <godot_cpp/variant/utility_functions.hpp>
 
 namespace geomops {
 
@@ -12,6 +12,7 @@ using godot::BoxShape3D;
 using godot::ConvexPolygonShape3D;
 using godot::PackedVector3Array;
 using godot::SIGN;
+using godot::UtilityFunctions;
 
 
 Vector3 support(SphereShape3D const * const sphere, 
@@ -60,18 +61,28 @@ Vector3 support(ConvexPolygonShape3D const * const convex,
                 Transform3D const & transform, 
                 Vector3 const & direction)
 {
+    PackedVector3Array const & points = convex->get_points();
+
+    if (points.is_empty()) {
+        UtilityFunctions::push_error("GeomOps: support(): ConvexPolygonShape3D has no points. Invalid collision shape.");
+        return transform.origin;
+    }
+
     Vector3 const dir_local = transform.basis.xform_inv(direction);
-    PackedVector3Array const pnt_array = convex->get_points();
-    real_t max_value = std::numeric_limits<real_t>::lowest();
-    int64_t max_index = -1;
-    for (int64_t i = 0; i < pnt_array.size(); i++) {
-        real_t const value = dir_local.dot(pnt_array[i]);
+    
+    Vector3 max_point = points[0];
+    real_t max_value = dir_local.dot(max_point);
+    
+    for (int64_t i = 1; i < points.size(); i++) {
+        Vector3 const & point = points[i];
+        real_t const value = dir_local.dot(point);
+
         if (value > max_value) {
             max_value = value;
-            max_index = i;
+            max_point = point;
         }
     }
-    return transform.origin + transform.basis.xform(pnt_array[max_index]);
+    return transform.origin + transform.basis.xform(max_point);
 }
 
 }

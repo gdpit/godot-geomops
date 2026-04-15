@@ -17,7 +17,7 @@ func _init() -> void:
                .set_no_depth_test(true)
 
     GeomOps3D.set_tolerance(1e-4)
-    GeomOps3D.set_max_iter(8)
+    GeomOps3D.set_max_iter(128)
 
 
 func _ready() -> void:    

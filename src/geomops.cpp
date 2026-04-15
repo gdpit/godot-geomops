@@ -63,8 +63,8 @@ void GeomOpsParams3D::_bind_methods()
     ClassDB::bind_method(D_METHOD("set_shape", "shape"), &GeomOpsParams3D::set_shape);
     ClassDB::bind_method(D_METHOD("get_shape"), &GeomOpsParams3D::get_shape);
 
-	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "transform"), "set_transform", "get_transform");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "shape", PROPERTY_HINT_RESOURCE_TYPE, "Shape3D"), "set_shape", "get_shape");
+    ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "transform"), "set_transform", "get_transform");
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "shape", PROPERTY_HINT_RESOURCE_TYPE, "Shape3D"), "set_shape", "get_shape");
 }
 
 godot::Vector3 const & GeomOpsResult3D::get_point_a() const
@@ -82,8 +82,8 @@ void GeomOpsResult3D::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_point_a"), &GeomOpsResult3D::get_point_a);
     ClassDB::bind_method(D_METHOD("get_point_b"), &GeomOpsResult3D::get_point_b);
 
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "point_a"), "", "get_point_a");
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "point_b"), "", "get_point_b");
+    ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "point_a"), "", "get_point_a");
+    ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "point_b"), "", "get_point_b");
 }
 
 
@@ -154,7 +154,7 @@ Vector3 GeomOps3D::support(GeomOpsParams3D const * const p_params, godot::Vector
     } else if (ConvexPolygonShape3D const * const convex = Object::cast_to<ConvexPolygonShape3D>(*p_params->shape)) {
         return geomops::support(convex, p_params->transform, p_dir);
     }
-    UtilityFunctions::push_error("Unsupported shape type passed to support function.");
+    UtilityFunctions::push_error("GeomOps: Unsupported shape type passed to support function.");
     return Vector3();
 }
 
@@ -184,7 +184,7 @@ bool GeomOps3D::closest_to_shape(godot::Ref<GeomOpsParams3D> p_params_a,
     // Vector3 p = csb->get_global_position() - csa->get_global_position();
     Vector3 p = p_params_b->transform.origin - p_params_a->transform.origin;
     if (p.length_squared() < tolerance_squared) {
-        UtilityFunctions::push_warning("Shapes are intersecting: the computed distance is zero or undefined.");
+        UtilityFunctions::push_warning("GeomOps: Shapes are intersecting: the computed distance is zero or undefined.");
         return false;
     }
 
@@ -202,7 +202,7 @@ bool GeomOps3D::closest_to_shape(godot::Ref<GeomOpsParams3D> p_params_a,
         d = p.length_squared();
 
         if (d < tolerance_squared) {
-            UtilityFunctions::push_warning("Shapes are intersecting: the computed distance is zero or undefined.");
+            UtilityFunctions::push_warning("GeomOps: Shapes are intersecting: the computed distance is zero or undefined.");
             return false;
         }
 
@@ -220,7 +220,7 @@ bool GeomOps3D::closest_to_shape(godot::Ref<GeomOpsParams3D> p_params_a,
 
         simplex.append(a, c);
     }
-    UtilityFunctions::push_warning("Maximum iteration limit reached: returning the latest approximated distance.");
+    UtilityFunctions::push_warning("GeomOps: Maximum iteration limit reached: returning the latest approximated distance.");
     result->point_a = simplex.get_closest_point_on_a();
     result->point_b = simplex.get_closest_point_on_b();
     return true;
@@ -258,7 +258,7 @@ bool GeomOps3D::closest_to_point(godot::Ref<GeomOpsParams3D> p_params,
         d = p.length_squared();
 
         if (d < tolerance_squared) {
-            UtilityFunctions::push_warning("Shapes are intersecting: the computed distance is zero or undefined.");
+            UtilityFunctions::push_warning("GeomOps: Shapes are intersecting: the computed distance is zero or undefined.");
             return false;
         }
 
@@ -277,7 +277,7 @@ bool GeomOps3D::closest_to_point(godot::Ref<GeomOpsParams3D> p_params,
         simplex.append(a, c);
     }
 
-    UtilityFunctions::push_warning("Maximum iteration limit reached: returning the latest approximated distance.");
+    UtilityFunctions::push_warning("GeomOps: Maximum iteration limit reached: returning the latest approximated distance.");
     result->point_a = simplex.get_closest_point_on_a();
     result->point_b = p_point;
     return true;
@@ -285,15 +285,3 @@ bool GeomOps3D::closest_to_point(godot::Ref<GeomOpsParams3D> p_params,
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-

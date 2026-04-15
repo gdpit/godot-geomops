@@ -1,5 +1,5 @@
 #include "simplex.hpp"
-#include <limits>
+#include <godot_cpp/variant/utility_functions.hpp>
 
 namespace geomops {
 
@@ -7,6 +7,7 @@ using godot::real_t;
 using godot::Vector3;
 using godot::ABS;
 using godot::CLAMP;
+using godot::UtilityFunctions;
 
 
 Simplex::Simplex()
@@ -26,10 +27,11 @@ bool Simplex::is_point_in_front_of_tetrahedron_face(Vector3 const a, Vector3 con
 {
     Vector3 const n = vec3_cross(b - a, c - a);
     real_t const w = vec3_dot(d - a, n);
-    if (ABS(w) < std::numeric_limits<real_t>::epsilon()) {
-        puts("The point `d` is affinely dependent: the result is undetermined.");
+    if (ABS(w) < CMP_EPSILON2) {
+        UtilityFunctions::push_warning("GeomOps: Point d is affinely dependent; the result is undefined.");
+        return false;
     }
-    return vec3_dot(p - a, n) * w < 0.0;
+    return (vec3_dot(p - a, n) * w) < 0.0;
 }
 
 
@@ -109,7 +111,7 @@ Vector3 Simplex::get_closest_point_on_tetrahedron(Vector3 const a, Vector3 const
                                                   Vector3 const p, real_t min_barycentric[])
 {
     Vector3 min_point = p;
-    real_t min_value = std::numeric_limits<real_t>::max();
+    real_t min_value = Math_INF;
     if (is_point_in_front_of_tetrahedron_face(a, b, c, d, p)) {
         real_t barycentric[3] = {0};
         Vector3 const point = get_closest_point_on_triangle(a, b, c, p, barycentric);
@@ -165,7 +167,7 @@ Vector3 Simplex::get_closest_point_on_tetrahedron(Vector3 const a, Vector3 const
 void Simplex::remove(size_t const index)
 {
     if (index > size) {
-        puts("Index out of bounds: index exceeds the size of the simplex.");
+        UtilityFunctions::push_error("GeomOps: Index out of bounds: index exceeds the simplex size.");
         return;
     }
     size--;
@@ -183,7 +185,7 @@ void Simplex::remove(size_t const index)
 void Simplex::append(Vector3 const subtrahend, Vector3 const difference)
 {
     if (size >= 4) {
-        puts("Simplex has reached its maximum capacity: cannot add new point.");
+        UtilityFunctions::push_error("GeomOps: Simplex has reached its maximum capacity: cannot add new point.");
         return;
     }
     subt[size] = subtrahend;
@@ -194,16 +196,16 @@ void Simplex::append(Vector3 const subtrahend, Vector3 const difference)
 
 void Simplex::reduce()
 {
-    if ((size >= 4) && (bary[3] < std::numeric_limits<real_t>::epsilon())) {
+    if ((size >= 4) && (bary[3] < CMP_EPSILON)) {
         remove(3);
     }
-    if ((size >= 3) && (bary[2] < std::numeric_limits<real_t>::epsilon())) {
+    if ((size >= 3) && (bary[2] < CMP_EPSILON)) {
         remove(2);
     }
-    if ((size >= 2) && (bary[1] < std::numeric_limits<real_t>::epsilon())) {
+    if ((size >= 2) && (bary[1] < CMP_EPSILON)) {
         remove(1);
     }
-    if ((size >= 1) && (bary[0] < std::numeric_limits<real_t>::epsilon())) {
+    if ((size >= 1) && (bary[0] < CMP_EPSILON)) {
         remove(0);
     }
 }
@@ -237,10 +239,6 @@ Vector3 Simplex::get_closest_point(Vector3 const point)
 
 Vector3 Simplex::get_closest_point_on_a() const
 {
-    //  NOTE:
-    // subt[] = a
-    // diff[] = b - a
-    // a = subt[]
     Vector3 cp;
     cp += bary[0] * subt[0];
     cp += bary[1] * subt[1];
@@ -252,10 +250,6 @@ Vector3 Simplex::get_closest_point_on_a() const
 
 Vector3 Simplex::get_closest_point_on_b() const
 {
-    //  NOTE:
-    //  subt[] = a
-    //  diff[] = b - a
-    //  b = diff[] + subt[]
     Vector3 cp;
     cp += bary[0] * (diff[0] + subt[0]);
     cp += bary[1] * (diff[1] + subt[1]);

@@ -24,7 +24,7 @@ if GeomOps3D.closest_to_point(params, point, result):
 ### 1. Clone repository with submodules
 
 ```Bash
-git clone --recurse-submodules https://github.com/aterray/godot-geomops.git
+git clone --recurse-submodules https://github.com/gdpit/godot-geomops.git
 cd godot-geomops
 ```
 
