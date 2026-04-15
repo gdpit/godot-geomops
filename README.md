@@ -1,10 +1,31 @@
+## Usage
+
+```gdscript
+var params_a := GeomOpsParams3D.new()
+params_a.shape     = ...
+params_a.transform = ...
+
+var params_b := GeomOpsParams3D.new()
+params_b.shape     = ...
+params_b.transform = ...
+
+var result := GeomOpsResult3D.new()
+
+if GeomOps3D.closest_to_shape(params_a, params_b, result):
+    result.point_a
+    result.point_b
+
+if GeomOps3D.closest_to_point(params, point, result):
+    ...
+```
+
 ## Build Instructions
 
 ### 1. Clone repository with submodules
 
 ```Bash
-git clone --recurse-submodules https://github.com/aterray/godot-distutils.git
-cd godot-distutils
+git clone --recurse-submodules https://github.com/aterray/godot-geomops.git
+cd godot-geomops
 ```
 
 If you already cloned:
@@ -23,7 +44,7 @@ godot.exe --dump-extension-api
 
 This will generate `extension_api.json` in the current working directory.
 
-Move `extension_api.json` into the root of the repository folder `godot-distutils/`.
+Move `extension_api.json` into the root of the repository folder `godot-geomops/`.
 
 ### 3. Create and activate a Python virtual environment (recommended)
 

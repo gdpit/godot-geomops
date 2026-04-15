@@ -1,6 +1,15 @@
 @tool
 extends Node3D
 
+@onready
+var collision_shapes: Array[CollisionShape3D] = [
+    $Sphere/CollisionShape3D,
+    $Capsule/CollisionShape3D,
+    $Cylinder/CollisionShape3D,
+    $Box/CollisionShape3D,
+    $Convex/CollisionShape3D
+]
+
 
 func _init() -> void:
     DebugDraw3D.scoped_config()\
@@ -33,28 +42,29 @@ func _ready() -> void:
 
 @warning_ignore("unused_parameter")
 func _physics_process(delta: float) -> void:
-
-    var distance_descriptors: Array[GeomOpsClosestPointPair3D] = [
-        GeomOps3D.closest_shape($Sphere/CollisionShape3D, $Capsule/CollisionShape3D),
-        GeomOps3D.closest_shape($Sphere/CollisionShape3D, $Cylinder/CollisionShape3D),
-        GeomOps3D.closest_shape($Sphere/CollisionShape3D, $Box/CollisionShape3D),
-        GeomOps3D.closest_shape($Sphere/CollisionShape3D, $Convex/CollisionShape3D),
-        GeomOps3D.closest_shape($Capsule/CollisionShape3D, $Cylinder/CollisionShape3D),
-        GeomOps3D.closest_shape($Capsule/CollisionShape3D, $Box/CollisionShape3D),
-        GeomOps3D.closest_shape($Capsule/CollisionShape3D, $Convex/CollisionShape3D),
-        GeomOps3D.closest_shape($Cylinder/CollisionShape3D, $Box/CollisionShape3D),
-        GeomOps3D.closest_shape($Cylinder/CollisionShape3D, $Convex/CollisionShape3D),
-        GeomOps3D.closest_shape($Box/CollisionShape3D, $Convex/CollisionShape3D),
-        
-        GeomOps3D.closest_point($Sphere/CollisionShape3D, $Point.position),
-        GeomOps3D.closest_point($Capsule/CollisionShape3D, $Point.position),
-        GeomOps3D.closest_point($Cylinder/CollisionShape3D, $Point.position),
-        GeomOps3D.closest_point($Box/CollisionShape3D, $Point.position),
-        GeomOps3D.closest_point($Convex/CollisionShape3D, $Point.position)
-    ]
+    var params_a := GeomOpsParams3D.new()
+    var params_b := GeomOpsParams3D.new()
+    var result := GeomOpsResult3D.new()
     
-    for distance_descriptor in distance_descriptors:
-        DebugDraw3D.draw_sphere(distance_descriptor.point_a, 0.02, Color.GREEN)
-        DebugDraw3D.draw_sphere(distance_descriptor.point_b, 0.02, Color.YELLOW)
-        DebugDraw3D.draw_line(distance_descriptor.point_a, distance_descriptor.point_b, Color.DIM_GRAY)
+    for i in collision_shapes.size() - 1:
+        for j in range(i + 1, collision_shapes.size()):
+            params_a.shape = collision_shapes[i].shape
+            params_a.transform = collision_shapes[i].get_parent().global_transform
+            
+            params_b.shape = collision_shapes[j].shape
+            params_b.transform = collision_shapes[j].get_parent().global_transform
+            
+            if GeomOps3D.closest_to_shape(params_a, params_b, result):
+                DebugDraw3D.draw_sphere(result.point_a, 0.02, Color.GREEN)
+                DebugDraw3D.draw_sphere(result.point_b, 0.02, Color.YELLOW)
+                DebugDraw3D.draw_line(result.point_a, result.point_b, Color.DIM_GRAY)
+
+
+    for collision_shape in collision_shapes:
+        params_a.shape = collision_shape.shape
+        params_a.transform = collision_shape.get_parent().global_transform   
         
+        if GeomOps3D.closest_to_point(params_a, $Point.global_position, result):
+            DebugDraw3D.draw_sphere(result.point_a, 0.02, Color.GREEN)
+            DebugDraw3D.draw_sphere(result.point_b, 0.02, Color.YELLOW)
+            DebugDraw3D.draw_line(result.point_a, result.point_b, Color.DIM_GRAY)

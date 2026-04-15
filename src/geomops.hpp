@@ -3,42 +3,76 @@
 
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/classes/collision_shape3d.hpp>
+#include <godot_cpp/classes/resource.hpp>
 
 namespace geomops {
 
-class GeomOpsClosestPointPair3D : public godot::RefCounted
+class GeomOpsParams3D: public godot::RefCounted
 {
-    GDCLASS(GeomOpsClosestPointPair3D, RefCounted)
-private:
-    godot::Vector3 point_a;
-    godot::Vector3 point_b;
+    GDCLASS(GeomOpsParams3D, RefCounted)
+
+    friend class GeomOps3D;
+
+    godot::Transform3D transform;
+    godot::Ref<godot::Resource> shape;
+
 protected:
     static void _bind_methods();
-public:
-    GeomOpsClosestPointPair3D();
-    GeomOpsClosestPointPair3D(godot::Vector3 const pa, godot::Vector3 const pb);
-    godot::Vector3 get_point_a() const;
-    godot::Vector3 get_point_b() const;
+
+public:    
+    void set_transform(godot::Transform3D const & p_transform);
+    godot::Transform3D const & get_transform() const;
+
+    void set_shape(godot::Ref<godot::Resource> const & p_shape);
+    godot::Ref<godot::Resource> get_shape() const;
 };
 
 
-class GeomOps3D: public godot::RefCounted
+class GeomOpsResult3D: public godot::RefCounted
 {
-    GDCLASS(GeomOps3D, RefCounted)
-private:
-    static godot::real_t tolerance;
-    static size_t max_iter;
-    static godot::Vector3 support(godot::CollisionShape3D const * cs, godot::Vector3 const dir);
+    GDCLASS(GeomOpsResult3D, RefCounted)
+
+    friend class GeomOps3D;
+
+    godot::Vector3 point_a;
+    godot::Vector3 point_b;
+
 protected:
     static void _bind_methods();
+
+public:    
+    godot::Vector3 const & get_point_a() const;
+    godot::Vector3 const & get_point_b() const;
+};
+
+
+class GeomOps3D: public godot::Object
+{
+    GDCLASS(GeomOps3D, Object)
+
+    static GeomOps3D * instance;
+    godot::real_t tolerance = 1e-3;
+    size_t max_iter = 64;
+    static godot::Vector3 support(GeomOpsParams3D const * const p_params, 
+                          godot::Vector3 const & p_dir);
+protected:
+    static void _bind_methods();
+
 public:
-    GeomOps3D();
-    static godot::real_t get_tolerance();
-    static void set_tolerance(godot::real_t const t);
-    static size_t get_max_iter();
-    static void set_max_iter(size_t const n);
-    static GeomOpsClosestPointPair3D * closest_shape(godot::CollisionShape3D const * csa, godot::CollisionShape3D const * csb);
-    static GeomOpsClosestPointPair3D * closest_point(godot::CollisionShape3D const * cs, godot::Vector3 const q);
+    static void create_singleton();
+    static void delete_singleton();
+    static GeomOps3D * get_singleton();
+
+    godot::real_t get_tolerance();
+    void set_tolerance(godot::real_t const t);
+    size_t get_max_iter();
+    void set_max_iter(size_t const n);
+    bool closest_to_shape(godot::Ref<GeomOpsParams3D> p_params_a,
+                          godot::Ref<GeomOpsParams3D> p_params_b,
+                          godot::Ref<GeomOpsResult3D> r_result);
+    bool closest_to_point(godot::Ref<GeomOpsParams3D> p_params,
+                          godot::Vector3 p_point,
+                          godot::Ref<GeomOpsResult3D> r_result);
 };
 
 }

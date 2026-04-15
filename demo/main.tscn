@@ -31,14 +31,14 @@ metadata/_edit_group_ = true
 shape = SubResource("CapsuleShape3D_4f4x2")
 
 [node name="Cylinder" type="StaticBody3D" parent="." unique_id=246962805]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.938926, 0, 4.0450854)
+transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, -2.938926, 0, 4.0450854)
 metadata/_edit_group_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cylinder" unique_id=1662968793]
 shape = SubResource("CylinderShape3D_4uxt2")
 
 [node name="Box" type="StaticBody3D" parent="." unique_id=964553667]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9389267, 0, 4.045085)
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 2.9389267, 0, 4.045085)
 metadata/_edit_group_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Box" unique_id=92307871]
