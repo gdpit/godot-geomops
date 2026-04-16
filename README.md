@@ -1,5 +1,7 @@
 ## Usage
 
+### Using `GeomOpsParams3D`
+
 ```gdscript
 var params_a := GeomOpsParams3D.new()
 params_a.shape     = ...
@@ -12,10 +14,26 @@ params_b.transform = ...
 var result := GeomOpsResult3D.new()
 
 if GeomOps3D.closest_to_shape(params_a, params_b, result):
-    result.point_a
-    result.point_b
+    print(result.point_a)
+    print(result.point_b)
 
-if GeomOps3D.closest_to_point(params, point, result):
+if GeomOps3D.closest_to_point(params_a, point, result):
+    ...
+```
+
+### Using `CollisionShape3D`
+
+```gdscript
+var collision_shape_a: CollisionShape3D = ...
+var collision_shape_b: CollisionShape3D = ...
+
+var result := GeomOpsResult3D.new()
+
+if GeomOps3D.node_closest_to_shape(collision_shape_a, collision_shape_b, result):
+    print(result.point_a)
+    print(result.point_b)
+
+if GeomOps3D.node_closest_to_point(collision_shape_a, point, result):
     ...
 ```
 

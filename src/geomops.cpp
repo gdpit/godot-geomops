@@ -33,6 +33,7 @@ using godot::ConvexPolygonShape3D;
 using godot::Transform3D;
 using godot::Ref;
 using godot::Resource;
+using godot::Shape3D;
 
 
 void GeomOpsParams3D::set_transform(Transform3D const & p_transform)
@@ -40,10 +41,12 @@ void GeomOpsParams3D::set_transform(Transform3D const & p_transform)
     transform = p_transform;
 }
 
+
 Transform3D const & GeomOpsParams3D::get_transform() const
 {
     return transform;
 }
+
 
 void GeomOpsParams3D::set_shape(Ref<Resource> const & p_shape)
 {
@@ -51,10 +54,12 @@ void GeomOpsParams3D::set_shape(Ref<Resource> const & p_shape)
     shape = p_shape;
 }
 
+
 Ref<Resource> GeomOpsParams3D::get_shape() const
 {
     return shape;
 }
+
 
 void GeomOpsParams3D::_bind_methods()
 {
@@ -67,15 +72,18 @@ void GeomOpsParams3D::_bind_methods()
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "shape", PROPERTY_HINT_RESOURCE_TYPE, "Shape3D"), "set_shape", "get_shape");
 }
 
+
 godot::Vector3 const & GeomOpsResult3D::get_point_a() const
 {
     return point_a;
 }
 
+
 godot::Vector3 const & GeomOpsResult3D::get_point_b() const
 {
     return point_b;
 }
+
 
 void GeomOpsResult3D::_bind_methods()
 {
@@ -115,77 +123,84 @@ void GeomOps3D::_bind_methods()
 {
     ClassDB::bind_method(D_METHOD("closest_to_shape", "params_a", "params_b", "result"), &GeomOps3D::closest_to_shape);
     ClassDB::bind_method(D_METHOD("closest_to_point", "params", "point", "result"), &GeomOps3D::closest_to_point);
+
+    ClassDB::bind_method(D_METHOD("node_closest_to_shape", "collision_shape_a", "collision_shape_b", "result"), &GeomOps3D::node_closest_to_shape);
+    ClassDB::bind_method(D_METHOD("node_closest_to_point", "collision_shape", "point", "result"), &GeomOps3D::node_closest_to_point);
+
     ClassDB::bind_method(D_METHOD("set_tolerance", "tolerance"), &GeomOps3D::set_tolerance);
     ClassDB::bind_method(D_METHOD("get_tolerance"), &GeomOps3D::get_tolerance);
     ClassDB::bind_method(D_METHOD("set_max_iter", "max_iter"), &GeomOps3D::set_max_iter);
     ClassDB::bind_method(D_METHOD("get_max_iter"), &GeomOps3D::get_max_iter);
 }
 
+
 real_t GeomOps3D::get_tolerance()
 {
     return tolerance;
 }
+
 
 void GeomOps3D::set_tolerance(real_t const t)
 {
     tolerance = t;
 }
 
+
 size_t GeomOps3D::get_max_iter()
 {
     return max_iter;
 }
+
 
 void GeomOps3D::set_max_iter(size_t const n)
 {
     max_iter = n;
 }
 
+
 Vector3 GeomOps3D::support(GeomOpsParams3D const * const p_params, godot::Vector3 const & p_dir)
 {
+    Vector3 const direction = p_params->transform.basis.xform_inv(p_dir);
+    Vector3 max_point;
     if (SphereShape3D const * const sphere = Object::cast_to<SphereShape3D>(*p_params->shape)) {
-        return geomops::support(sphere, p_params->transform, p_dir);
+        max_point = geomops::support(sphere, direction);
     } else if (CapsuleShape3D const * const capsule = Object::cast_to<CapsuleShape3D>(*p_params->shape)) {
-        return geomops::support(capsule, p_params->transform, p_dir);
+        max_point = geomops::support(capsule, direction);
     } else if (CylinderShape3D const * const cylinder = Object::cast_to<CylinderShape3D>(*p_params->shape)) {
-        return geomops::support(cylinder, p_params->transform, p_dir);
+        max_point = geomops::support(cylinder, direction);
     } else if (BoxShape3D const * const box = Object::cast_to<BoxShape3D>(*p_params->shape)) {
-        return geomops::support(box, p_params->transform, p_dir);
+        max_point = geomops::support(box, direction);
     } else if (ConvexPolygonShape3D const * const convex = Object::cast_to<ConvexPolygonShape3D>(*p_params->shape)) {
-        return geomops::support(convex, p_params->transform, p_dir);
+        max_point = geomops::support(convex, direction);
+    } else {
+        UtilityFunctions::push_error("GeomOps: Unsupported shape type passed to support function.");
     }
-    UtilityFunctions::push_error("GeomOps: Unsupported shape type passed to support function.");
-    return Vector3();
+    return p_params->transform.origin + p_params->transform.basis.xform(max_point);
 }
+
 
 bool GeomOps3D::closest_to_shape(godot::Ref<GeomOpsParams3D> p_params_a,
                                  godot::Ref<GeomOpsParams3D> p_params_b,
                                  godot::Ref<GeomOpsResult3D> r_result)
 {
-    // if (!csa || !ObjectDB::get_instance(csa->get_instance_id())) {
-    //     UtilityFunctions::push_error("The collision shape 'csa' is not valid.");
-    //     return memnew(GeomOpsClosestPointPair3D());
-    // }
+    ERR_FAIL_COND_V(p_params_a.is_null(), false);
+    ERR_FAIL_COND_V(p_params_b.is_null(), false);
 
-    // if (!csb || !ObjectDB::get_instance(csb->get_instance_id())) {
-    //     UtilityFunctions::push_error("The collision shape 'csb' is not valid.");        
-    //     return memnew(GeomOpsClosestPointPair3D());
-    // }
-
-    // if (csa == csb) {
-    //     UtilityFunctions::push_error("The same CollisionShape3D instance has been passed as both 'csa' and 'csb'.");
-    //     return memnew(GeomOpsClosestPointPair3D());
-    // }
-
+    ERR_FAIL_COND_V(p_params_a->shape.is_null(), false);
+    ERR_FAIL_COND_V(p_params_b->shape.is_null(), false);
+    
     GeomOpsResult3D * const result = r_result.ptr();
 
     real_t const tolerance_squared = tolerance * tolerance;
 
-    // Vector3 p = csb->get_global_position() - csa->get_global_position();
     Vector3 p = p_params_b->transform.origin - p_params_a->transform.origin;
     if (p.length_squared() < tolerance_squared) {
-        UtilityFunctions::push_warning("GeomOps: Shapes are intersecting: the computed distance is zero or undefined.");
+        UtilityFunctions::push_warning("GeomOps::closest_to_shape(): Shapes are intersecting: the computed distance is zero or undefined.");
         return false;
+    }
+
+    if (r_result.is_null()) {
+        r_result.instantiate();
     }
 
     real_t d = 0.0;
@@ -202,7 +217,7 @@ bool GeomOps3D::closest_to_shape(godot::Ref<GeomOpsParams3D> p_params_a,
         d = p.length_squared();
 
         if (d < tolerance_squared) {
-            UtilityFunctions::push_warning("GeomOps: Shapes are intersecting: the computed distance is zero or undefined.");
+            UtilityFunctions::push_warning("GeomOps::closest_to_shape(): Shapes are intersecting: the computed distance is zero or undefined.");
             return false;
         }
 
@@ -220,28 +235,33 @@ bool GeomOps3D::closest_to_shape(godot::Ref<GeomOpsParams3D> p_params_a,
 
         simplex.append(a, c);
     }
-    UtilityFunctions::push_warning("GeomOps: Maximum iteration limit reached: returning the latest approximated distance.");
+    UtilityFunctions::push_warning("GeomOps::closest_to_shape(): Maximum iteration limit reached: returning the latest approximated distance.");
     result->point_a = simplex.get_closest_point_on_a();
     result->point_b = simplex.get_closest_point_on_b();
     return true;
 }
 
+
 bool GeomOps3D::closest_to_point(godot::Ref<GeomOpsParams3D> p_params,
                                  godot::Vector3 p_point,
                                  godot::Ref<GeomOpsResult3D> r_result)
 {
-    // if (!cs || !ObjectDB::get_instance(cs->get_instance_id())) {
-    //     UtilityFunctions::push_error("Invalid CollisionShape3D.");
-    //     return memnew(GeomOpsClosestPointPair3D());
-    // }
+    ERR_FAIL_COND_V(p_params.is_null(), false);
 
+    ERR_FAIL_COND_V(p_params->shape.is_null(), false);
+    
     GeomOpsResult3D * const result = r_result.ptr();
 
     real_t const tolerance_squared = tolerance * tolerance;
 
     Vector3 p = p_point - p_params->transform.origin;
     if (p.length_squared() < tolerance_squared) {
+        UtilityFunctions::push_warning("GeomOps::closest_to_point(): Shapes are intersecting: the computed distance is zero or undefined.");
         return false;
+    }
+
+    if (r_result.is_null()) {
+        r_result.instantiate();
     }
 
     real_t d = 0.0;
@@ -258,7 +278,7 @@ bool GeomOps3D::closest_to_point(godot::Ref<GeomOpsParams3D> p_params,
         d = p.length_squared();
 
         if (d < tolerance_squared) {
-            UtilityFunctions::push_warning("GeomOps: Shapes are intersecting: the computed distance is zero or undefined.");
+            UtilityFunctions::push_warning("GeomOps::closest_to_point(): Shapes are intersecting: the computed distance is zero or undefined.");
             return false;
         }
 
@@ -277,10 +297,51 @@ bool GeomOps3D::closest_to_point(godot::Ref<GeomOpsParams3D> p_params,
         simplex.append(a, c);
     }
 
-    UtilityFunctions::push_warning("GeomOps: Maximum iteration limit reached: returning the latest approximated distance.");
+    UtilityFunctions::push_warning("GeomOps::closest_to_point(): Maximum iteration limit reached: returning the latest approximated distance.");
     result->point_a = simplex.get_closest_point_on_a();
     result->point_b = p_point;
     return true;
+}
+
+
+bool GeomOps3D::node_closest_to_shape(CollisionShape3D const * p_collision_shape_a,
+                                      CollisionShape3D const * p_collision_shape_b,
+                                      Ref<GeomOpsResult3D> r_result)
+{
+    ERR_FAIL_NULL_V(p_collision_shape_a, false);
+    ERR_FAIL_NULL_V(p_collision_shape_b, false);
+
+    if (p_collision_shape_a == p_collision_shape_b) {
+        UtilityFunctions::push_error("GeomOps::node_closest_to_shape(): Both inputs reference the same CollisionShape3D instance.");
+        return false;
+    }
+    
+    Ref<GeomOpsParams3D> params_a;
+    params_a.instantiate();
+    params_a->shape = p_collision_shape_a->get_shape();
+    params_a->transform = p_collision_shape_a->get_global_transform();
+    
+    Ref<GeomOpsParams3D> params_b;
+    params_b.instantiate();
+    params_b->shape = p_collision_shape_b->get_shape();
+    params_b->transform = p_collision_shape_b->get_global_transform();
+
+    return closest_to_shape(params_a, params_b, r_result);
+}
+
+
+bool GeomOps3D::node_closest_to_point(CollisionShape3D const * p_collision_shape,
+                                      Vector3 p_point,
+                                      Ref<GeomOpsResult3D> r_result)
+{
+    ERR_FAIL_NULL_V(p_collision_shape, false);
+
+    Ref<GeomOpsParams3D> params;
+    params.instantiate();
+    params->shape = p_collision_shape->get_shape();
+    params->transform = p_collision_shape->get_global_transform();
+
+    return closest_to_point(params, p_point, r_result);
 }
 
 

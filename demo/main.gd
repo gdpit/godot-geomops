@@ -42,29 +42,43 @@ func _ready() -> void:
 
 @warning_ignore("unused_parameter")
 func _physics_process(delta: float) -> void:
-    var params_a := GeomOpsParams3D.new()
-    var params_b := GeomOpsParams3D.new()
-    var result := GeomOpsResult3D.new()
     
+    var result := GeomOpsResult3D.new()
     for i in collision_shapes.size() - 1:
         for j in range(i + 1, collision_shapes.size()):
-            params_a.shape = collision_shapes[i].shape
-            params_a.transform = collision_shapes[i].get_parent().global_transform
-            
-            params_b.shape = collision_shapes[j].shape
-            params_b.transform = collision_shapes[j].get_parent().global_transform
-            
-            if GeomOps3D.closest_to_shape(params_a, params_b, result):
+            if GeomOps3D.node_closest_to_shape(collision_shapes[i], collision_shapes[j], result):
                 DebugDraw3D.draw_sphere(result.point_a, 0.02, Color.GREEN)
                 DebugDraw3D.draw_sphere(result.point_b, 0.02, Color.YELLOW)
                 DebugDraw3D.draw_line(result.point_a, result.point_b, Color.DIM_GRAY)
-
-
+                
     for collision_shape in collision_shapes:
-        params_a.shape = collision_shape.shape
-        params_a.transform = collision_shape.get_parent().global_transform   
-        
-        if GeomOps3D.closest_to_point(params_a, $Point.global_position, result):
+        if GeomOps3D.node_closest_to_point(collision_shape, $Point.global_position, result):
             DebugDraw3D.draw_sphere(result.point_a, 0.02, Color.GREEN)
             DebugDraw3D.draw_sphere(result.point_b, 0.02, Color.YELLOW)
             DebugDraw3D.draw_line(result.point_a, result.point_b, Color.DIM_GRAY)
+    
+    #var params_a := GeomOpsParams3D.new()
+    #var params_b := GeomOpsParams3D.new()
+    #var result := GeomOpsResult3D.new()
+    #
+    #for i in collision_shapes.size() - 1:
+    #    for j in range(i + 1, collision_shapes.size()):
+    #        params_a.shape = collision_shapes[i].shape
+    #        params_a.transform = collision_shapes[i].get_parent().global_transform
+    #        
+    #        params_b.shape = collision_shapes[j].shape
+    #        params_b.transform = collision_shapes[j].get_parent().global_transform
+    #        
+    #        if GeomOps3D.closest_to_shape(params_a, params_b, result):
+    #            DebugDraw3D.draw_sphere(result.point_a, 0.02, Color.GREEN)
+    #            DebugDraw3D.draw_sphere(result.point_b, 0.02, Color.YELLOW)
+    #            DebugDraw3D.draw_line(result.point_a, result.point_b, Color.DIM_GRAY)
+    #
+    #for collision_shape in collision_shapes:
+    #    params_a.shape = collision_shape.shape
+    #    params_a.transform = collision_shape.get_parent().global_transform   
+    #    
+    #    if GeomOps3D.closest_to_point(params_a, $Point.global_position, result):
+    #        DebugDraw3D.draw_sphere(result.point_a, 0.02, Color.GREEN)
+    #        DebugDraw3D.draw_sphere(result.point_b, 0.02, Color.YELLOW)
+    #        DebugDraw3D.draw_line(result.point_a, result.point_b, Color.DIM_GRAY)

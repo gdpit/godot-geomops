@@ -67,12 +67,20 @@ public:
     void set_tolerance(godot::real_t const t);
     size_t get_max_iter();
     void set_max_iter(size_t const n);
+
     bool closest_to_shape(godot::Ref<GeomOpsParams3D> p_params_a,
                           godot::Ref<GeomOpsParams3D> p_params_b,
-                          godot::Ref<GeomOpsResult3D> r_result);
+                          godot::Ref<GeomOpsResult3D> r_result = {});
     bool closest_to_point(godot::Ref<GeomOpsParams3D> p_params,
                           godot::Vector3 p_point,
-                          godot::Ref<GeomOpsResult3D> r_result);
+                          godot::Ref<GeomOpsResult3D> r_result = {});
+
+    bool node_closest_to_shape(godot::CollisionShape3D const * p_collision_shape_a,
+                               godot::CollisionShape3D const * p_collision_shape_b,
+                               godot::Ref<GeomOpsResult3D> r_result = {});
+    bool node_closest_to_point(godot::CollisionShape3D const * p_collision_shape,
+                               godot::Vector3 p_point,
+                               godot::Ref<GeomOpsResult3D> r_result = {});
 };
 
 }
