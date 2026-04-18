@@ -19,9 +19,21 @@
 !src/register_types.hpp
 !src/register_types.cpp
 
+!addons/
+!addons/geomops/
+!addons/geomops/geomops.gdextension
+!addons/geomops/lib/
+!addons/geomops/lib/libgeomops.windows.template_debug.x86_64.dll
+!addons/geomops/lib/libgeomops.windows.template_release.x86_64.dll
+
 !demo/
-!demo/geomops.gdextension
 !demo/project.godot
 !demo/icon.svg
 !demo/main.tscn
 !demo/main.gd
+!demo/addons/
+!demo/addons/geomops/
+!demo/addons/geomops/geomops.gdextension
+!demo/addons/geomops/lib/
+!demo/addons/geomops/lib/libgeomops.windows.template_debug.x86_64.dll
+!demo/addons/geomops/lib/libgeomops.windows.template_release.x86_64.dll

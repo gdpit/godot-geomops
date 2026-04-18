@@ -46,6 +46,7 @@ if (-not (Test-Path "godot-cpp\bin\*")) {
 }
 
 
-scons verbose=yes platform=windows
+scons verbose=yes platform=windows target=template_debug
+scons verbose=yes platform=windows target=template_release
 
 deactivate
